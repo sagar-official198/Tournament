@@ -1,87 +1,299 @@
-# Kabaddi Tournament App (MERN)
+# 🏆 Kabaddi Tournament Management System
 
-Village kabaddi tournament: knockout bracket, live score with animations, team photos, players and captain.
-No login. Everyone opens the site directly. The person who scores uses one secret link.
+A full-stack MERN application designed for village and local Kabaddi tournaments. It provides tournament management, knockout brackets, team and player profiles, live match scoring, and real-time scoreboard updates.
 
-## Folders (frontend and backend are separate)
+## 🌐 Live Demo
 
-```
+- **Frontend:** https://tournament-two-theta.vercel.app/
+- **Backend:** https://kabaddi-backend-kza0.onrender.com
+- **Admin / Scorer Panel:** `/manage/<SCORER_KEY>` (private access only)
+
+## ✨ Features
+
+### 🏟️ Tournament Management
+- Create and manage Kabaddi tournaments.
+- Generate knockout brackets automatically.
+- Support byes in knockout rounds.
+- Track match schedules and ground details.
+- Automatically advance winners to the next round.
+
+### 👥 Team & Player Management
+- Add and manage teams.
+- Upload team logos and photos.
+- Register players with their details.
+- Select team captains.
+- View team and player profiles.
+
+### ⚡ Live Match Scoring
+- Real-time score updates using Socket.io.
+- Raid and tackle point management.
+- Super raid and super tackle detection.
+- Bonus point calculation.
+- All-out detection.
+- Player revival tracking.
+- Undo functionality for scoring corrections.
+- Live match event animations.
+
+### 📺 Big Screen Display
+- Live scoreboard for LED screens.
+- Team information and player details.
+- Match timer and score updates.
+- Real-time tournament display.
+
+### 🔐 Scorer Access
+- No login required for public viewers.
+- Private scorer access through a secret URL.
+- Protected tournament management operations.
+
+## 🛠️ Tech Stack
+
+**Frontend**
+- React.js
+- Vite
+- Tailwind CSS
+- Socket.io Client
+- JavaScript
+
+**Backend**
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- Socket.io
+- Cloudinary
+- Multer
+
+**Deployment**
+- Frontend: Vercel
+- Backend: Render
+- Database: MongoDB Atlas
+
+## 📁 Project Structure
+
+```text
 kabaddi-app/
-  server/                    Node + Express + MongoDB + Socket.io
-    config/                  db, cloudinary, rules.js (kabaddi rule numbers)
-    models/                  Team, Player, Tournament, Match
-    controllers/             team, player, tournament, match, upload
-    routes/index.js          all API routes
-    middleware/              scorerKey (secret link), upload, errors
-    services/                matchService (advance winner), realtime (socket emits)
-    sockets/io.js            Socket.io setup
-    utils/
-      kabaddiEngine.js       scoring rules (pure, tested)
-      bracket.js             knockout bracket + byes (pure, tested)
-    tests/                   npm test
-    server.js
-  client/                    React + Vite + Tailwind
-    src/
-      api/                   fetch wrapper, socket
-      hooks/                 useLiveMatch, useTournament
-      utils/                 rounds, effects (animation messages)
-      context/               ScorerKeyContext
-      components/            Scoreboard, PlayerDots, EventBanner, Bracket, MatchCard, ...
-      pages/                 Home, BracketPage, TeamsPage, TeamDetail, MatchPage
-      pages/manage/          ManageShell, ManageTeams, ManageTeamEdit,
-                             ManageTournament, ManageMatches, ScorerPanel
+│
+├── client/
+│   ├── public/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── hooks/
+│   │   ├── utils/
+│   │   ├── context/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   │   ├── manage/
+│   │   │   ├── Home
+│   │   │   ├── BracketPage
+│   │   │   ├── TeamsPage
+│   │   │   └── MatchPage
+│   │   └── App.jsx
+│   ├── vite.config.js
+│   └── package.json
+│
+├── server/
+│   ├── config/
+│   ├── models/
+│   ├── controllers/
+│   ├── routes/
+│   ├── middleware/
+│   ├── services/
+│   ├── sockets/
+│   ├── utils/
+│   ├── tests/
+│   ├── server.js
+│   └── package.json
+│
+├── .gitignore
+└── README.md
 ```
 
-## Run it on your computer
+## ⚙️ Installation & Setup
 
-1. MongoDB: make a free cluster on MongoDB Atlas and copy the connection string.
-2. Cloudinary: make a free account (needed only for photo upload).
-3. Server:
-   ```
-   cd server
-   npm install
-   cp .env.example .env     # then fill MONGO_URI, SCORER_KEY, Cloudinary keys
-   npm run dev
-   ```
-   Make SCORER_KEY a long random text (for example 30+ letters and numbers).
-4. Client (new terminal):
-   ```
-   cd client
-   npm install
-   npm run dev
-   ```
-5. Open http://localhost:5173
+### Prerequisites
 
-## How to use
+- Node.js
+- npm
+- MongoDB Atlas account
+- Cloudinary account (for image uploads)
 
-- Viewers: just open the site. Home, Bracket, Teams, and each match page update live.
-- Scorer link: `http://localhost:5173/manage/<SCORER_KEY>`. Share it only with the scorer. Do not post it anywhere public.
-- Order of work:
-  1. Teams tab: add teams, logo, team photo, players, pick the captain.
-  2. Tournament tab: create the tournament, tick teams, press "Make bracket".
-  3. Matches tab: set time and ground, choose who raids first, press "Start match".
-  4. Scorer screen: pick how many defenders were touched, tick bonus if it counts, press "Record raid". Use Tackle and Empty raid for the other results. Undo fixes a mistake. Finish match sends the winner to the next round.
+### 1. Clone Repository
 
-## Rules built in (server/utils/kabaddiEngine.js, numbers in server/config/rules.js)
-
-- Touch point: 1 per defender touched. Bonus point: 1, only when the defence has 6 or 7 on the mat, and it never revives.
-- Super raid: 3 or more points in one raid.
-- Tackle: 1 point. Super tackle: 2 points when the defence has 3 or fewer.
-- Empty raids: after 2 in a row, the next raid is do-or-die. If the raider fails, he is out and the defence gets 1 point.
-- All out: 2 extra points and the whole team returns.
-- Revival: one player per point, in the order they went out.
-- A tied match cannot be finished (knockout needs a winner). Score the extra time or golden raid, then finish.
-
-Your village may use slightly different rules (for example 3 empty raids for do-or-die). Change the numbers in `server/config/rules.js`.
-
-## Deploy
-
-- Server on Render: root folder `server`, build `npm install`, start `npm start`, add the same environment variables. Set `CLIENT_URL` to your website address.
-- Client on Vercel: root folder `client`. Set `VITE_API_URL` to the Render server address. `vercel.json` already handles page refresh.
-
-## Tests
-
+```bash
+git clone https://github.com/sagar-official198/Tournament.git
+cd Tournament
 ```
+
+### 2. Backend Setup
+
+```bash
+cd server
+npm install
+```
+
+Create a `.env` file inside the server folder:
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+CLIENT_URL=http://localhost:5173
+SCORER_KEY=your_long_random_secret
+```
+
+Add Cloudinary credentials if image uploads are enabled.
+
+Start the backend:
+
+```bash
+npm run dev
+```
+
+### 3. Frontend Setup
+
+Open another terminal:
+
+```bash
+cd client
+npm install
+```
+
+Create a `.env` file:
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+Start the frontend:
+
+```bash
+npm run dev
+```
+
+Open your browser:
+
+```text
+http://localhost:5173
+```
+
+## 🏅 How to Use the Application
+
+### For Tournament Organizers
+
+1. Open the private scorer/admin URL.
+2. Navigate to the Teams section.
+3. Add teams, team photos, players, and captains.
+4. Open Tournament management.
+5. Create a tournament and select participating teams.
+6. Generate the knockout bracket.
+7. Configure matches, match time, and ground.
+8. Start the match.
+9. Use the Scorer Panel to record live scoring.
+10. Finish the match to advance the winner automatically.
+
+### For Public Viewers
+
+Visitors can directly access the website without registration.
+
+They can:
+- View tournament information.
+- Explore participating teams.
+- View player details.
+- Check knockout brackets.
+- Follow live match scores.
+- Watch the scoreboard on a big screen.
+
+## 📜 Kabaddi Scoring Rules
+
+The application includes the following configurable scoring rules:
+
+| Event | Points |
+|---|---:|
+| Touch Point | 1 per defender |
+| Bonus Point | 1 |
+| Tackle | 1 |
+| Super Tackle | 2 |
+| Super Raid | 3 or more raid points |
+| All Out | 2 additional points |
+
+Additional rules:
+
+- Bonus points are available when the defending team has 6 or 7 players on the mat.
+- Two consecutive empty raids make the next raid a do-or-die raid.
+- Revival returns one player per point in the order players were eliminated.
+- A tied knockout match requires extra time or a golden raid to determine the winner.
+
+Rules can be customized in:
+
+```text
+server/config/rules.js
+```
+
+## 🚀 Deployment
+
+### Backend Deployment – Render
+
+- Root Directory: `server`
+- Runtime: Node
+- Build Command: `npm install`
+- Start Command: `npm start`
+
+Configure environment variables in Render:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+CLIENT_URL=https://tournament-two-theta.vercel.app
+SCORER_KEY=your_strong_random_secret
+```
+
+Add Cloudinary variables if required.
+
+### Frontend Deployment – Vercel
+
+- Root Directory: `client`
+- Framework: Vite
+- Build Command: `npm run build`
+- Output Directory: `dist`
+- Install Command: `npm install`
+
+Environment variable:
+
+```env
+VITE_API_URL=https://kabaddi-backend-kza0.onrender.com
+```
+
+Redeploy after changing environment variables.
+
+## 🧪 Testing
+
+Run backend tests:
+
+```bash
 cd server
 npm test
 ```
+
+The tests cover the Kabaddi scoring engine and knockout bracket utilities.
+
+## 🔒 Security
+
+- Never commit `.env` files.
+- Keep MongoDB credentials private.
+- Use a strong and unique scorer secret.
+- Never publish the private scorer URL.
+- Validate scorer authorization on backend routes.
+- Configure CORS to allow your deployed frontend.
+- Do not expose private credentials in frontend environment variables.
+
+## 👨‍💻 Developer
+
+**Abhiraj Sagar**
+
+GitHub: https://github.com/sagar-official198
+
+## 📄 License
+
+No license has been specified yet. Add a LICENSE file before permitting reuse or redistribution.
+
+---
+
+**Built to bring digital live scoring and tournament management to local Kabaddi tournaments!** 🏆
